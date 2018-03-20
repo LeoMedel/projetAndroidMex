@@ -3,6 +3,7 @@ package com.example.mkmkmk.projetmex;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import com.example.mkmkmk.projetmex.model.Villes;
 import com.example.mkmkmk.projetmex.model.cityModel;
@@ -64,6 +66,8 @@ public class city extends AppCompatActivity {
                 }
                 adapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, villes);
                 listV.setAdapter(adapter);
+                listV.setBackgroundColor(Color.WHITE);
+                listV.setClickable(true);
                 listV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         Toast.makeText(getApplicationContext(), "On va à : "+(position+1)+" "+villes.get(position), Toast.LENGTH_SHORT).show();

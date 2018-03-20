@@ -17,6 +17,15 @@ public class Villes {
 
     }
 
+    public Villes(String img, String info, double lat, double lng, String ville)
+    {
+        this.img = img;
+        this.info = info;
+        this.lat = lat;
+        this.lng = lng;
+        this.ville = ville;
+    }
+
     public String getVille() {
         return ville;
     }

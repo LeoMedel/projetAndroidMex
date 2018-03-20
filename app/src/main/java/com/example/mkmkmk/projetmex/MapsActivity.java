@@ -48,6 +48,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
+        mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
         LatLng p1 = new LatLng(22.890342 ,-109.917998);
         LatLng p2 = new LatLng( 23.853434 ,-110.759552);
         LatLng p3 = new LatLng(24.789474,  -112.291023);
@@ -135,18 +137,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         LatLng Mex = new LatLng(19.4326077, -99.13320799999997);
         Polygon nordOption = mMap.addPolygon(new PolygonOptions()
                 .add(p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12,p13,p14,p15,p16,p17,p18,p19,p20,p21,p22,p23,p24,p25,p26,p27,p28,p29,p30,p31,p32,p33,p34,p35,p36,p37,p38,p39,p40,p41)
-                .strokeColor(Color.RED));
+                .strokeColor(Color.TRANSPARENT));
         Polygon centreOption = mMap.addPolygon(new PolygonOptions()
             .add(c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c20,c21,c22,c23,c24)
-            .strokeColor(Color.BLUE));
+                .strokeColor(Color.TRANSPARENT));
 
         Polygon sudOption = mMap.addPolygon(new PolygonOptions()
         .add(s1,s2,s3,s4,s4,s5,s6,s7,s8,s9,s10,s11,s12,s13,s14)
-        .strokeColor(Color.GREEN));
+        .strokeColor(Color.TRANSPARENT));
         nordOption.setClickable(true);
         centreOption.setClickable(true);
         sudOption.setClickable(true);
-
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                Toast.makeText(getApplicationContext(),"Cliquez dessus Mexique", Toast.LENGTH_LONG).show();
+            }
+        });
         mMap.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener() {
             @Override
             public void onPolygonClick(Polygon polygon) {
@@ -162,6 +169,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         break;
                     case "pg5":
                         intent.putExtra("zone", "sud");
+                        startActivity(intent);
+                        break;
+                    case "pg0":
+                        intent.putExtra("zone","Nord");
+                        startActivity(intent);
+                        break;
+                    case "pg1":
+                        intent.putExtra("zone","Centre");
+                        startActivity(intent);
+                        break;
+                    case "pg2":
+                        intent.putExtra("zone","sud");
                         startActivity(intent);
                         break;
                 }
