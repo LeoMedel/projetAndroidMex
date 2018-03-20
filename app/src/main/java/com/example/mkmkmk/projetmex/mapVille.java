@@ -7,12 +7,18 @@ import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.mkmkmk.projetmex.model.Villes;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class mapVille extends FragmentActivity implements OnMapReadyCallback {
 
@@ -31,13 +37,30 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
         mapFragment.getMapAsync(this);
 
         Intent getIntent = getIntent();
-        String[] ville = getIntent.getStringArrayExtra("ville");
+        final String[] ville = getIntent.getStringArrayExtra("ville");
 
         txt_Titre = (TextView) findViewById(R.id.txtTitre);
         txt_Info = (TextView) findViewById(R.id.txtInfo);
         txt_Titre.setText(ville[2]);
         txt_Info.setText("Zone :"+ville[0]+". Avec l'item : "+ville[1]);
 
+
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        final DatabaseReference villesRef = firebaseDatabase.getReference("Mexico");
+        villesRef.child("Zone").child(ville[0]).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                DataSnapshot inf = dataSnapshot.child(ville[1]);
+                Villes vil = inf.getValue(Villes.class);
+                Toast.makeText(getApplicationContext(),vil.getInfo(),Toast.LENGTH_LONG).show();
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
         //Toast.makeText(getApplicationContext(), ville[0]+" "+ville[1]+" "+ville[2], Toast.LENGTH_SHORT).show();
 
     }
