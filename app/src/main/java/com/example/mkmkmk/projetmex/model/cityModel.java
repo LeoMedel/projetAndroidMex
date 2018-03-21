@@ -4,6 +4,9 @@ package com.example.mkmkmk.projetmex.model;
  * Created by Emmanuel on 14/03/2018.
  */
 
+/**
+ * Classe implementé pour creer les ville quand l'utilisateur touche une ville pour la regarder
+ */
 public class cityModel {
     public String info;
     public String img;

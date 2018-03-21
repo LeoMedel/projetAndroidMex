@@ -14,7 +14,11 @@ import java.util.List;
 
 public class DataParser {
 
-
+    /**
+     * Dans cette classe on fait le travail pour creer la liste avec le valeurs qui result de la requeete
+     * @param googlePlaceJson
+     * @return
+     */
     private HashMap<String, String> getPlace(JSONObject googlePlaceJson)
     {
         HashMap<String, String> googlePlaceMap = new HashMap<>();

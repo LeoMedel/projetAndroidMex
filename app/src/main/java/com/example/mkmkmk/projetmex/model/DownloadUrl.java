@@ -16,7 +16,12 @@ import java.net.URL;
 
 public class DownloadUrl {
 
-
+    /**
+     * Methode qui permet de lire l'url
+     * @param myUrl
+     * @return
+     * @throws IOException
+     */
     public String readUrl(String myUrl) throws IOException
     {
         String data = "";

@@ -18,38 +18,53 @@ import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+/**
+ * @author Leonel MEDEL et Emmanuel YAH
+ * @version 21/03/2018
+ */
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
+    //attributs de la classe
     private GoogleMap mMap;
     Intent intent;
     private LatLngBounds Mexico;
+
+    /**Methode qui affiche l'interface
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+
+        //on implement cet methode pour afficher la vue en LANDSCAPE
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+        //on inicialice notre variable intent
         intent =  new Intent(this, city.class);
-    }
+    }//Fermeture de methode
 
-
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
+    /** Methode qui nous affiche la carte dans l'element de la vue
+     *@param googleMap le methode l'utilise pour creer la carte de Google Maps
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        //on affiche la carte avec le type hibride
         mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+
+        //On afficherons la carte qui correspond aux coordonnees du Mexique
+        LatLng Mex = new LatLng(23.957186, -102.535321);
+        Mexico = new LatLngBounds(Mex,Mex);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Mex, 3));
+        mMap.setLatLngBoundsForCameraTarget(Mexico);
+        mMap.setMinZoomPreference(4.6f);
+
+        //Quand la carte est pret, on ajoute les points qui vont delimite Mexique en trois zones
         LatLng p1 = new LatLng(22.890342 ,-109.917998);
         LatLng p2 = new LatLng( 23.853434 ,-110.759552);
         LatLng p3 = new LatLng(24.789474,  -112.291023);
@@ -133,27 +148,34 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         LatLng s13 = new LatLng( 14.438086 ,-92.331224);
         LatLng s14 = new LatLng(16.779509 , -99.772264);
 
-        // Add a marker in Sydney and move the camera
-
+        //nous creons des polygones pour savoir dans quelle zone quelqu'un touche la carte dans l'ecran
+        //Ici, nous saurons que l'utilisateur touche le nord du Mexique
         Polygon nordOption = mMap.addPolygon(new PolygonOptions()
                 .add(p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12,p13,p14,p15,p16,p17,p18,p19,p20,p21,p22,p23,p24,p25,p26,p27,p28,p29,p30,p31,p32,p33,p34,p35,p36,p37,p38,p39,p40,p41)
                 .strokeColor(Color.TRANSPARENT));
+        //Ici, nous saurons que l'utilisateur touche le centre du Mexique
         Polygon centreOption = mMap.addPolygon(new PolygonOptions()
             .add(c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c20,c21,c22,c23,c24)
                 .strokeColor(Color.TRANSPARENT));
 
+        //Finalement, nous saurons que l'utilisateur touche le sud du Mexique
         Polygon sudOption = mMap.addPolygon(new PolygonOptions()
         .add(s1,s2,s3,s4,s4,s5,s6,s7,s8,s9,s10,s11,s12,s13,s14)
         .strokeColor(Color.TRANSPARENT));
+
         nordOption.setClickable(true);
         centreOption.setClickable(true);
         sudOption.setClickable(true);
+
+        //dans cette cas, nous saurons que l'utilisateur ne touche pas la carte au Mexique, on affiche une message
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
                 Toast.makeText(getApplicationContext(),"Cliquez dessus Mexique", Toast.LENGTH_LONG).show();
             }
         });
+
+        //Quand quelqu'un touche la carte au Mexique, nous afficherons la suivant vue qui correspond a la zone touché
         mMap.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener() {
             @Override
             public void onPolygonClick(Polygon polygon) {
@@ -187,10 +209,5 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-        LatLng Mex = new LatLng(23.957186, -102.535321);
-        Mexico = new LatLngBounds(Mex,Mex);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Mex, 3));
-        mMap.setLatLngBoundsForCameraTarget(Mexico);
-        mMap.setMinZoomPreference(4.6f);
-    }
-}
+    }//Fermeture de onMapReady
+}//Fermeture de la class

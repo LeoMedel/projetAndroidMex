@@ -50,18 +50,21 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 
+/**@author Leonel MEDEL et Emanuel YAH
+ *
+ */
 public class mapVille extends FragmentActivity implements OnMapReadyCallback {
 
+    //Attributs de la classe
     private GoogleMap mMap;
     private Marker markerUbicacion;
-
     private TextView txt_Titre;
     private TextView txt_Info;
     private Button btn_Restaurant;
     private Button btn_Museo;
     private Button btn_Hospital;
     private Button btn_Hotel;
-    private  Button btn_Ubicacion;
+    private Button btn_Ubicacion;
     private ImageView imge;
     private Bitmap loadedImage;
     private Villes vil;
@@ -70,6 +73,9 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
     int PROXIMITY_RADIUS = 100000;
     String[] ville;
 
+    /**Methode qui crée l'interface
+     *
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,9 +87,12 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        //nous creons un intent pour recevoiir l'info
         Intent getIntent = getIntent();
+        //on ajoute l'info dans un array
         ville = getIntent.getStringArrayExtra("ville");
 
+        //on fait la relation entre les éléments de la vue
         txt_Titre = (TextView) findViewById(R.id.txtTitre);
         txt_Info = (TextView) findViewById(R.id.txtInfo);
         btn_Restaurant = (Button) findViewById(R.id.btnRestaurant);
@@ -94,19 +103,21 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
         imge = (ImageView) findViewById(R.id.villeIMG);
     }
 
-    PolylineOptions chemin;
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        //on affiche la carte de type hibride
         mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+
+        //on appelle cette methode pour affiche la carte avec notre ubication
         miUbicacion();
+        //on appelle cette methode pour montrer la ville selectoné
         createVille(ville[0], ville[1]);
-
-
-
-
     }
 
+    /**
+     * Methode qui permet afficher notre Ubication
+     */
     private void miUbicacion() {
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -143,9 +154,13 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
         }
     };
 
+    /**
+     * Methode qui fait le marker de notre ubication
+     * @param lat notre latitude
+     * @param lng notre longitude
+     */
     private void agregarMarcador(double lat, double lng) {
         LatLng coordenadas = new LatLng(lat, lng);
-        //CameraUpdate miUbicacion = CameraUpdateFactory.newLatLngZoom(coordenadas, 5);
 
         if (markerUbicacion != null) {
             markerUbicacion.remove();
@@ -154,9 +169,11 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
                 .position(coordenadas)
                 .title("Je suis ici")
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
-        //mMap.animateCamera(miUbicacion);
     }
 
+    /**
+     * Methode qui permet faire mis ajour notre ubication
+     */
     private void actualizarUbicacion(Location location) {
         if (location != null) {
             latitude = location.getLatitude();
@@ -165,8 +182,10 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
         }
     }
 
-
-
+    /**
+     * Methode qui permet afficher notre ubication en relation avec la ville
+     * @param view
+     */
     public void setUbicacion(View view)
     {
         mMap.clear();
@@ -210,12 +229,14 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
     }
 
 
-
-
+    /**
+     * Methodes qui permettent d'afficher les Restaurant, Musees, Hopitals et Hoteles
+     * @param view
+     */
 
     public void setRestaurant(View view)
     {
-
+        //on fait la conexion avec la base de donnes de Firebase
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         final DatabaseReference villesRef = firebaseDatabase.getReference("Mexico");
 
@@ -228,18 +249,23 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
 
                 vil = new Villes(villeChoisi.getImg(), villeChoisi.getInfo(), villeChoisi.getLat(), villeChoisi.getLng(), villeChoisi.getVille());
 
+                //on fait une variable de type GetNearbyPlacesData.
                 GetNearbyPlacesData getNerabyPlacesData = new GetNearbyPlacesData();
-                Object dataTransfer[] = new Object[2];
+                Object dataTransfer[] = new Object[3];
 
+                //on efface tous les markers dans la carte
                 mMap.clear();
-                String restaurant = "restaurant";
+                String restaurant = "Restaurant";
+                //on cree l'url avec laquelle on va faire la requete ave une API de google Places
                 String url = getUrl(vil.getLat(), vil.getLng(), restaurant);
                 dataTransfer[0] = mMap;
                 dataTransfer[1] = url;
+                dataTransfer[2] = restaurant;
 
+                //on appelle a la methode de la clase GetNearbyPlacesData.
                 getNerabyPlacesData.execute(dataTransfer);
-                Toast.makeText(getApplicationContext(), "Show Restaurant", Toast.LENGTH_SHORT).show();
 
+                Toast.makeText(getApplicationContext(), "Show Restaurant", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -249,7 +275,7 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
         });
 
     }
-
+    //C'est un methode different avec la meme instruction qui affiche Musees
     public void setMuseo(View view)
     {
 
@@ -266,13 +292,14 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
                 vil = new Villes(villeChoisi.getImg(), villeChoisi.getInfo(), villeChoisi.getLat(), villeChoisi.getLng(), villeChoisi.getVille());
 
                 GetNearbyPlacesData getNerabyPlacesData = new GetNearbyPlacesData();
-                Object dataTransfer[] = new Object[2];
+                Object dataTransfer[] = new Object[3];
 
                 mMap.clear();
-                String restaurant = "Museo";
-                String url = getUrl(vil.getLat(), vil.getLng(), restaurant);
+                String musee = "Museo";
+                String url = getUrl(vil.getLat(), vil.getLng(), musee);
                 dataTransfer[0] = mMap;
                 dataTransfer[1] = url;
+                dataTransfer[2] = musee;
 
                 getNerabyPlacesData.execute(dataTransfer);
                 Toast.makeText(getApplicationContext(), "Show Museum", Toast.LENGTH_SHORT).show();
@@ -287,7 +314,7 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
 
     }
 
-
+    //C'est un methode different avec la meme instruction qui affiche Hopitals
     public void setHosptital(View view)
     {
 
@@ -304,13 +331,14 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
                 vil = new Villes(villeChoisi.getImg(), villeChoisi.getInfo(), villeChoisi.getLat(), villeChoisi.getLng(), villeChoisi.getVille());
 
                 GetNearbyPlacesData getNerabyPlacesData = new GetNearbyPlacesData();
-                Object dataTransfer[] = new Object[2];
+                Object dataTransfer[] = new Object[3];
 
                 mMap.clear();
-                String restaurant = "Hospital";
-                String url = getUrl(vil.getLat(), vil.getLng(), restaurant);
+                String hospital = "Hospital";
+                String url = getUrl(vil.getLat(), vil.getLng(), hospital);
                 dataTransfer[0] = mMap;
                 dataTransfer[1] = url;
+                dataTransfer[2] = hospital;
 
                 getNerabyPlacesData.execute(dataTransfer);
                 Toast.makeText(getApplicationContext(), "Show Hospital", Toast.LENGTH_SHORT).show();
@@ -325,6 +353,7 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
 
     }
 
+    //C'est un methode different avec la meme instruction qui affiche Hotel
     public void setHotel(View view)
     {
 
@@ -341,13 +370,14 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
                 vil = new Villes(villeChoisi.getImg(), villeChoisi.getInfo(), villeChoisi.getLat(), villeChoisi.getLng(), villeChoisi.getVille());
 
                 GetNearbyPlacesData getNerabyPlacesData = new GetNearbyPlacesData();
-                Object dataTransfer[] = new Object[2];
+                Object dataTransfer[] = new Object[3];
 
                 mMap.clear();
-                String restaurant = "Hotel";
-                String url = getUrl(vil.getLat(), vil.getLng(), restaurant);
+                String hotel = "Hotel";
+                String url = getUrl(vil.getLat(), vil.getLng(), hotel);
                 dataTransfer[0] = mMap;
                 dataTransfer[1] = url;
+                dataTransfer[2] = hotel;
 
                 getNerabyPlacesData.execute(dataTransfer);
                 Toast.makeText(getApplicationContext(), "Show Hotel", Toast.LENGTH_SHORT).show();
@@ -362,7 +392,11 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
 
     }
 
-
+    /**
+     * Methode qui permet de afficher la ubication de la ville selectioné
+     * @param zone de la carte
+     * @param index de la ville selectioné
+     */
 
     public void createVille(String zone, String index)
     {
@@ -405,7 +439,13 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
     }
 
 
-
+    /**
+     * Methode qui permet de creer l'url a utiliser
+     * @param latitude des lieux
+     * @param longitude "" ""
+     * @param nearbyPlace
+     * @return
+     */
     private String getUrl(double latitude, double longitude, String nearbyPlace)
     {
         StringBuilder googlePlaceUrl = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
