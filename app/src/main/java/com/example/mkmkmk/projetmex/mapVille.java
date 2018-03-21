@@ -167,8 +167,10 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
         }
         markerUbicacion = mMap.addMarker(new MarkerOptions()
                 .position(coordenadas)
-                .title("Je suis ici")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+                .title("Vous êtes ici")
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.taquito)));
+                //.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+                //.icon(BitmapDescriptorFactory.fromResource(R.drawable.iconmexico)));
     }
 
     /**
@@ -190,6 +192,7 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
     {
         mMap.clear();
         miUbicacion();
+
         createVille(ville[0], ville[1]);
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         final DatabaseReference villesRef = firebaseDatabase.getReference("Mexico");
@@ -236,6 +239,8 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
 
     public void setRestaurant(View view)
     {
+        //on efface tous les markers dans la carte
+        mMap.clear();
         //on fait la conexion avec la base de donnes de Firebase
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         final DatabaseReference villesRef = firebaseDatabase.getReference("Mexico");
@@ -253,9 +258,7 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
                 GetNearbyPlacesData getNerabyPlacesData = new GetNearbyPlacesData();
                 Object dataTransfer[] = new Object[3];
 
-                //on efface tous les markers dans la carte
-                mMap.clear();
-                String restaurant = "Restaurant";
+                String restaurant = "restaurant";
                 //on cree l'url avec laquelle on va faire la requete ave une API de google Places
                 String url = getUrl(vil.getLat(), vil.getLng(), restaurant);
                 dataTransfer[0] = mMap;
@@ -278,6 +281,7 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
     //C'est un methode different avec la meme instruction qui affiche Musees
     public void setMuseo(View view)
     {
+        mMap.clear();
 
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         final DatabaseReference villesRef = firebaseDatabase.getReference("Mexico");
@@ -294,8 +298,7 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
                 GetNearbyPlacesData getNerabyPlacesData = new GetNearbyPlacesData();
                 Object dataTransfer[] = new Object[3];
 
-                mMap.clear();
-                String musee = "Museo";
+                String musee = "museum";
                 String url = getUrl(vil.getLat(), vil.getLng(), musee);
                 dataTransfer[0] = mMap;
                 dataTransfer[1] = url;
@@ -317,7 +320,7 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
     //C'est un methode different avec la meme instruction qui affiche Hopitals
     public void setHosptital(View view)
     {
-
+        mMap.clear();
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         final DatabaseReference villesRef = firebaseDatabase.getReference("Mexico");
 
@@ -333,8 +336,7 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
                 GetNearbyPlacesData getNerabyPlacesData = new GetNearbyPlacesData();
                 Object dataTransfer[] = new Object[3];
 
-                mMap.clear();
-                String hospital = "Hospital";
+                String hospital = "hospital";
                 String url = getUrl(vil.getLat(), vil.getLng(), hospital);
                 dataTransfer[0] = mMap;
                 dataTransfer[1] = url;
@@ -373,7 +375,7 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
                 Object dataTransfer[] = new Object[3];
 
                 mMap.clear();
-                String hotel = "Hotel";
+                String hotel = "hotel";
                 String url = getUrl(vil.getLat(), vil.getLng(), hotel);
                 dataTransfer[0] = mMap;
                 dataTransfer[1] = url;
@@ -419,7 +421,7 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
                 //Toast.makeText(getApplicationContext(),vil.getImg(),Toast.LENGTH_LONG).show();
 
                 LatLng markerVille = new LatLng(vil.getLat(), vil.getLng());
-                mMap.addMarker(new MarkerOptions().position(markerVille).title("Ici c'est "+vil.getVille()).icon(BitmapDescriptorFactory.fromResource(R.drawable.taco)));
+                mMap.addMarker(new MarkerOptions().position(markerVille).title("Ici c'est "+vil.getVille()).icon(BitmapDescriptorFactory.fromResource(R.drawable.ubicamex)));
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(markerVille));
 
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(markerVille, 5.50f));

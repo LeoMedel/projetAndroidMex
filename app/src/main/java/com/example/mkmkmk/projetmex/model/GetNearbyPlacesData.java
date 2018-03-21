@@ -2,6 +2,7 @@ package com.example.mkmkmk.projetmex.model;
 
 import android.os.AsyncTask;
 
+import com.example.mkmkmk.projetmex.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -27,9 +28,10 @@ public class GetNearbyPlacesData extends AsyncTask<Object, String, String> {
     protected String doInBackground(Object... objects) {
 
         //on initialise les variables
+        lieu = (String) objects[2];
         mMap = (GoogleMap) objects[0];
         url = (String) objects[1];
-        lieu = (String) objects[2];
+
 
         //variable de type DownloadUrl
         DownloadUrl downloadUrl = new DownloadUrl();
@@ -73,25 +75,30 @@ public class GetNearbyPlacesData extends AsyncTask<Object, String, String> {
             markerOptions.position(latLng);
             markerOptions.title(placeName+" "+vicinity);
 
-            if (lieu == "Restaurant")
+            if (lieu == "restaurant")
             {
-                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.restaurant));
+                //lieu ="";
             }
-            else if (lieu == "Hospital")
+            else if (lieu == "hospital")
             {
-                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.hospital));
+                //lieu ="";
             }
-            else if (lieu == "Museo")
+            else if (lieu == "museum")
             {
-                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.museum));
+                //lieu ="";
             }
-            else if (lieu == "Hotel")
+            else if (lieu == "hotel")
             {
-                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
+                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.hotel));
+                //lieu ="";
             }
             else
             {
-                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                //lieu ="";
             }
 
             mMap.addMarker(markerOptions);
@@ -99,6 +106,7 @@ public class GetNearbyPlacesData extends AsyncTask<Object, String, String> {
             mMap.animateCamera(CameraUpdateFactory.zoomTo(10));
 
         }
+        lieu ="";
     }
 
 
