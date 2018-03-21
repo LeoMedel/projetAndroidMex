@@ -134,7 +134,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         LatLng s14 = new LatLng(16.779509 , -99.772264);
 
         // Add a marker in Sydney and move the camera
-        LatLng Mex = new LatLng(19.4326077, -99.13320799999997);
+
         Polygon nordOption = mMap.addPolygon(new PolygonOptions()
                 .add(p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12,p13,p14,p15,p16,p17,p18,p19,p20,p21,p22,p23,p24,p25,p26,p27,p28,p29,p30,p31,p32,p33,p34,p35,p36,p37,p38,p39,p40,p41)
                 .strokeColor(Color.TRANSPARENT));
@@ -187,10 +187,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-
+        LatLng Mex = new LatLng(23.957186, -102.535321);
         Mexico = new LatLngBounds(Mex,Mex);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Mex, 5));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Mex, 3));
         mMap.setLatLngBoundsForCameraTarget(Mexico);
-        mMap.setMinZoomPreference(5.0f);
+        mMap.setMinZoomPreference(4.6f);
     }
 }

@@ -5,7 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -15,6 +18,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,7 +40,14 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.List;
 
 public class mapVille extends FragmentActivity implements OnMapReadyCallback {
@@ -51,7 +62,8 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
     private Button btn_Hospital;
     private Button btn_Hotel;
     private  Button btn_Ubicacion;
-
+    private ImageView imge;
+    private Bitmap loadedImage;
     private Villes vil;
     private double latitude = 0.0;
     private double longitude =0.0;
@@ -79,7 +91,7 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
         btn_Hospital = (Button) findViewById(R.id.btnHospital);
         btn_Hotel = (Button) findViewById(R.id.btnHotel);
         btn_Ubicacion = (Button) findViewById(R.id.btnUbicacion);
-
+        imge = (ImageView) findViewById(R.id.villeIMG);
     }
 
     PolylineOptions chemin;
@@ -140,7 +152,7 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
         }
         markerUbicacion = mMap.addMarker(new MarkerOptions()
                 .position(coordenadas)
-                .title("Mi Ubicacion")
+                .title("Je suis ici")
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
         //mMap.animateCamera(miUbicacion);
     }
@@ -184,7 +196,7 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
                         .add(new LatLng(vil.getLat(),vil.getLng()), new LatLng(latitude,longitude))
                         .width(5)
                         .color(Color.RED));
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(8.0f ));
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(1.0f ));
                 Toast.makeText(getApplicationContext(), "Il y a une distance de "+distanceK+" Km ", Toast.LENGTH_SHORT).show();
 
             }
@@ -369,13 +381,20 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
 
                 txt_Info.setText(vil.getInfo());
                 txt_Titre.setText(vil.getVille());
+                btn_Ubicacion.setText(vil.getVille()+" et Vous");
+                //Toast.makeText(getApplicationContext(),vil.getImg(),Toast.LENGTH_LONG).show();
 
                 LatLng markerVille = new LatLng(vil.getLat(), vil.getLng());
-                mMap.addMarker(new MarkerOptions().position(markerVille).title("Ici c'est "+vil.getVille()));
+                mMap.addMarker(new MarkerOptions().position(markerVille).title("Ici c'est "+vil.getVille()).icon(BitmapDescriptorFactory.fromResource(R.drawable.taco)));
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(markerVille));
 
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(markerVille, 5.50f));
-
+                Picasso.with(getApplicationContext())
+                        .load(vil.getImg())
+                        .error(R.drawable.iconmexico)
+                        .fit()
+                        .centerInside()
+                        .into(imge);
             }
 
             @Override
@@ -383,10 +402,9 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
 
             }
         });
-
-
-
     }
+
+
 
     private String getUrl(double latitude, double longitude, String nearbyPlace)
     {

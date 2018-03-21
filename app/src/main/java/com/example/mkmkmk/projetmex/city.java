@@ -64,15 +64,14 @@ public class city extends AppCompatActivity {
                        // Toast.makeText(getApplicationContext(), ""+villes, Toast.LENGTH_SHORT).show();
                     }
                 }
-                adapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, villes);
+                adapter = new ArrayAdapter(getApplicationContext(),R.layout.my_cutom_layout, villes);
                 listV.setAdapter(adapter);
-                listV.setBackgroundColor(Color.WHITE);
-                listV.setClickable(true);
+                //listV.setCacheColorHint(Color.WHITE);
+                //listV.setBackgroundColor(Color.GREEN);
                 listV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        Toast.makeText(getApplicationContext(), "On va à : "+(position+1)+" "+villes.get(position), Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getApplicationContext(), "On va à : "+(position+1)+" "+villes.get(position), Toast.LENGTH_SHORT).show();
                         String [] villeData = {getZone,""+(position+1) ,villes.get(position)};
-
                         intent.putExtra("ville", villeData);
                         startActivity(intent);
 
