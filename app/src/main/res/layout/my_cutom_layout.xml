@@ -7,8 +7,9 @@
     android:layout_marginLeft="25dp"
     android:layout_marginRight="25dp"
     android:fontFamily="casual"
-    android:textAlignment="viewStart"
+    android:textAlignment="center"
     android:textAllCaps="false"
-    android:textColor="@color/common_google_signin_btn_text_dark_default"
-    android:textSize="30sp" />
+    android:textColor="@color/common_google_signin_btn_text_dark_focused"
+    android:textSize="30sp"
+    android:textStyle="bold" />
 

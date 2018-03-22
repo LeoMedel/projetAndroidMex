@@ -185,25 +185,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         intent.putExtra("zone","Nord");
                         startActivity(intent);
                         break;
-                    case "pg4":
-                        intent.putExtra("zone", "Centre");
-                        startActivity(intent);
-                        break;
-                    case "pg5":
-                        intent.putExtra("zone", "sud");
-                        startActivity(intent);
-                        break;
                     case "pg0":
                         intent.putExtra("zone","Nord");
+                        startActivity(intent);
+                        break;
+                    case "pg4":
+                        intent.putExtra("zone", "Centre");
                         startActivity(intent);
                         break;
                     case "pg1":
                         intent.putExtra("zone","Centre");
                         startActivity(intent);
                         break;
+                    case "pg5":
+                        intent.putExtra("zone", "sud");
+                        startActivity(intent);
+                        break;
                     case "pg2":
                         intent.putExtra("zone","sud");
                         startActivity(intent);
+                        break;
+                    default:
+                        Toast.makeText(getApplicationContext(), "Veuillez redémarrer l'application. MERCI", Toast.LENGTH_LONG).show();
                         break;
                 }
             }

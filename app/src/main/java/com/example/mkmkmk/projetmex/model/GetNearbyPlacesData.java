@@ -17,13 +17,16 @@ import java.util.List;
  * Created by mkmkmk on 20/03/2018.
  */
 
+//Dnas cette Clase va utiliser AsyncTask pour realiser des taches en deuxième plan
 public class GetNearbyPlacesData extends AsyncTask<Object, String, String> {
 
+    //Attributs de la Classe
     String googlePlacesData;
     GoogleMap mMap;
     String url;
     String lieu="";
 
+    //on commence quand la classe est executé et on realise les taches en deuxième plan
     @Override
     protected String doInBackground(Object... objects) {
 
@@ -36,76 +39,89 @@ public class GetNearbyPlacesData extends AsyncTask<Object, String, String> {
         //variable de type DownloadUrl
         DownloadUrl downloadUrl = new DownloadUrl();
         try {
-            //on appelle au methode readUrl de la classe DownloadUrl
+            //on appelle au methode readUrl de la classe DownloadUrl avec l'url généré
             googlePlacesData = downloadUrl.readUrl(url);
 
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //ajouter les nouveau valeur dans la variable
+        //on ajoute les nouveau valeur dans la variable avec les resultats
         return googlePlacesData;
     }
 
     @Override
     protected void onPostExecute(String s) {
+        //on crée une list qui va obtenir les lieux prêts
         List<HashMap<String, String>> nearbyPlaceList = null;
 
+        //on fait une variable de la Classe DataParser
         DataParser parser = new DataParser();
+        //on va parser les donne reçu avec le methode parse() de la classe DataParser avec le variable
         nearbyPlaceList = parser.parse(s);
+        //Pour finir et afficher les markers dans la carte on appelle le methode showNearbyPlace()
         showNearbyPlaces(nearbyPlaceList);
     }
 
     /**
-     * Methode pour creer les markers de chaque lieu trouvé dans la carte
+     * Methode qui permet creer les markers de chaque lieu trouvé dans la carte
      * @param nearbyPlaceList
      */
     private void  showNearbyPlaces(List<HashMap<String, String>> nearbyPlaceList)
     {
+        //on a besoin de faire un boucle qui va permettre faire tous les markers dans la carte
         for (int i = 0; i < nearbyPlaceList.size(); i++)
         {
+            //on cree et initiale une variable MarkerOption qui a les methodes pour faire les markers
             MarkerOptions markerOptions = new MarkerOptions();
-            HashMap<String, String> googlPlace = nearbyPlaceList.get(i);
 
-            String placeName = googlPlace.get("place_name");
-            String vicinity = googlPlace.get("vicinity");
-            double lat = Double.parseDouble(googlPlace.get("lat"));
-            double lng = Double.parseDouble(googlPlace.get("lng"));
+            //avec un variable List local, on ajoute la List du parametre avec un element qui correspond avec l'aide du boucle
+            HashMap<String, String> googlePlace = nearbyPlaceList.get(i);
 
+            //avec plus des variables locales, on les ajoute ce qu'il y a dans l'élément dans chaque champs
+            String placeName = googlePlace.get("place_name");
+            String vicinity = googlePlace.get("vicinity");
+            double lat = Double.parseDouble(googlePlace.get("lat"));
+            double lng = Double.parseDouble(googlePlace.get("lng"));
+
+            //on fait une variable Latlng qui permet de recevoir les coordonnees
             LatLng latLng = new LatLng(lat, lng);
+
+            //avec la variable markerOption on utilise son methode position qui contiens les coordonnes
             markerOptions.position(latLng);
+            //maintenant le methode title quand on touche le marker dans la carte
             markerOptions.title(placeName+" "+vicinity);
 
+            //condition pour savoir que icon va etre afficher dans la carte selon le mot-clé
             if (lieu == "restaurant")
             {
                 markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.restaurant));
-                //lieu ="";
             }
             else if (lieu == "hospital")
             {
                 markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.hospital));
-                //lieu ="";
             }
             else if (lieu == "museum")
             {
                 markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.museum));
-                //lieu ="";
             }
             else if (lieu == "hotel")
             {
                 markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.hotel));
-                //lieu ="";
             }
             else
             {
                 markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-                //lieu ="";
             }
 
+            //Pour concluir on ajoute le marker en cours du boucle a la carte
             mMap.addMarker(markerOptions);
+            //on fait un zoom dans la carte pour affiche les resultats
             mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(10));
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(9));
 
-        }
+        }//fermeture du boucle
+
+        //on efface le mot/clé qu'on a reçu
         lieu ="";
     }
 

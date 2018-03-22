@@ -12,6 +12,7 @@ import android.graphics.Rect;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,20 +59,19 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
 
     //Attributs de la classe
     private GoogleMap mMap;
-    private Marker markerUbicacion;
+    private Marker markerUbication;
     private TextView txt_Titre;
     private TextView txt_Info;
     private Button btn_Restaurant;
-    private Button btn_Museo;
+    private Button btn_Musee;
     private Button btn_Hospital;
     private Button btn_Hotel;
-    private Button btn_Ubicacion;
+    private Button btn_Ubication;
     private ImageView imge;
     private Bitmap loadedImage;
     private Villes vil;
     private double latitude = 0.0;
     private double longitude =0.0;
-    int PROXIMITY_RADIUS = 100000;
     String[] ville;
 
     /**Methode qui crée l'interface
@@ -96,46 +97,53 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
         txt_Titre = (TextView) findViewById(R.id.txtTitre);
         txt_Info = (TextView) findViewById(R.id.txtInfo);
         btn_Restaurant = (Button) findViewById(R.id.btnRestaurant);
-        btn_Museo = (Button) findViewById(R.id.btnMuseo);
+        btn_Musee = (Button) findViewById(R.id.btnMusee);
         btn_Hospital = (Button) findViewById(R.id.btnHospital);
         btn_Hotel = (Button) findViewById(R.id.btnHotel);
-        btn_Ubicacion = (Button) findViewById(R.id.btnUbicacion);
+        btn_Ubication = (Button) findViewById(R.id.btnUbication);
         imge = (ImageView) findViewById(R.id.villeIMG);
+
+
     }
+
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
         //on affiche la carte de type hibride
         mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 
         //on appelle cette methode pour affiche la carte avec notre ubication
-        miUbicacion();
+        monUbication();
         //on appelle cette methode pour montrer la ville selectoné
-        createVille(ville[0], ville[1]);
+        afficherVille(ville[0], ville[1]);
     }
 
     /**
      * Methode qui permet afficher notre Ubication
      */
-    private void miUbicacion() {
+    private void monUbication() {
 
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        //Permission de l'aplication pour pouvoir utiliser l'ubication du dispositif
+        //apres de l'activer et autoriser dans Configuration du dispositif
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
 
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
-        actualizarUbicacion(location);
+        updateUbication(location);
 
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 15000, 0, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 0, locationListener);
     }
 
     LocationListener locationListener = new LocationListener() {
+        //S'il y a un change d'ubication il va faire un mis a jour
         @Override
         public void onLocationChanged(Location location) {
-            actualizarUbicacion(location);
+            updateUbication(location);
         }
 
         @Override
@@ -155,45 +163,47 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
     };
 
     /**
-     * Methode qui fait le marker de notre ubication
+     * Methode qui fait seulement le marker de notre ubication
      * @param lat notre latitude
      * @param lng notre longitude
      */
-    private void agregarMarcador(double lat, double lng) {
-        LatLng coordenadas = new LatLng(lat, lng);
+    private void ajouterMarker(double lat, double lng) {
+        LatLng coordonees = new LatLng(lat, lng);
 
-        if (markerUbicacion != null) {
-            markerUbicacion.remove();
+        if (markerUbication != null) {
+            markerUbication.remove();
         }
-        markerUbicacion = mMap.addMarker(new MarkerOptions()
-                .position(coordenadas)
+        markerUbication = mMap.addMarker(new MarkerOptions()
+                .position(coordonees)
                 .title("Vous êtes ici")
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.taquito)));
-                //.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
-                //.icon(BitmapDescriptorFactory.fromResource(R.drawable.iconmexico)));
     }
 
     /**
      * Methode qui permet faire mis ajour notre ubication
      */
-    private void actualizarUbicacion(Location location) {
+    private void updateUbication(Location location) {
         if (location != null) {
             latitude = location.getLatitude();
             longitude = location.getLongitude();
-            agregarMarcador(latitude, longitude);
+            //on appelle le methode pour afficher notre nouvelle ubication
+            ajouterMarker(latitude, longitude);
         }
     }
 
     /**
-     * Methode qui permet afficher notre ubication en relation avec la ville
+     * Methode qui permet afficher la distance entre la ville et notre ubication
      * @param view
      */
-    public void setUbicacion(View view)
+    public void setUbication(View view)
     {
+        //on efface tous les markers dans la carte
         mMap.clear();
-        miUbicacion();
 
-        createVille(ville[0], ville[1]);
+        //on affiche notre ubication
+        monUbication();
+
+        //on va faire un demande a la BD pour recuperer les coordonnees de la ville
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         final DatabaseReference villesRef = firebaseDatabase.getReference("Mexico");
 
@@ -205,15 +215,23 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
                 Villes villeChoisi = inf.getValue(Villes.class);
 
                 vil = new Villes(villeChoisi.getImg(), villeChoisi.getInfo(), villeChoisi.getLat(), villeChoisi.getLng(), villeChoisi.getVille());
+                //on fait le marker de la ville
+                LatLng markerVille = new LatLng(vil.getLat(), vil.getLng());
+                mMap.addMarker(new MarkerOptions().position(markerVille).title("Ici c'est "+vil.getVille()).icon(BitmapDescriptorFactory.fromResource(R.drawable.ubicamex)));
+
+                //variables de type Location avec les coordonnes correspondant
                 Location l = new Location("Location 1");
                 l.setLatitude(vil.getLat());
                 l.setLongitude(vil.getLng());
                 Location l2 = new Location("Location 2");
                 l2.setLatitude(latitude);
                 l2.setLongitude(longitude);
+
+                //on obtiens la distance
                 double distanceM = l.distanceTo(l2);
                 double distanceK = distanceM/1000;
 
+                //finalement, on va desiner la ligne dans la carte
                 Polyline line = mMap.addPolyline( new PolylineOptions()
                         .add(new LatLng(vil.getLat(),vil.getLng()), new LatLng(latitude,longitude))
                         .width(5)
@@ -233,7 +251,8 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
 
 
     /**
-     * Methodes qui permettent d'afficher les Restaurant, Musees, Hopitals et Hoteles
+     * Methodes qui permettent d'afficher les Restaurant ("setResturant()"), Musees("setMusee()"),
+     * Hopitals("setHopital()") et les Hotels("setHotel()")
      * @param view
      */
 
@@ -255,18 +274,22 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
                 vil = new Villes(villeChoisi.getImg(), villeChoisi.getInfo(), villeChoisi.getLat(), villeChoisi.getLng(), villeChoisi.getVille());
 
                 //on fait une variable de type GetNearbyPlacesData.
-                GetNearbyPlacesData getNerabyPlacesData = new GetNearbyPlacesData();
+                GetNearbyPlacesData getNearbyPlacesData = new GetNearbyPlacesData();
+                //on fait une variable Object qui va garder l'info qu'on a besion pour pouuvoir montrer les lieu correct
                 Object dataTransfer[] = new Object[3];
 
                 String restaurant = "restaurant";
                 //on cree l'url avec laquelle on va faire la requete ave une API de google Places
                 String url = getUrl(vil.getLat(), vil.getLng(), restaurant);
+                //on ajouet la carte
                 dataTransfer[0] = mMap;
+                //on ajouter l'url généré
                 dataTransfer[1] = url;
+                //finalement, on ajoute le Mot-clé
                 dataTransfer[2] = restaurant;
 
                 //on appelle a la methode de la clase GetNearbyPlacesData.
-                getNerabyPlacesData.execute(dataTransfer);
+                getNearbyPlacesData.execute(dataTransfer);
 
                 Toast.makeText(getApplicationContext(), "Show Restaurant", Toast.LENGTH_SHORT).show();
             }
@@ -279,7 +302,7 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
 
     }
     //C'est un methode different avec la meme instruction qui affiche Musees
-    public void setMuseo(View view)
+    public void setMusee(View view)
     {
         mMap.clear();
 
@@ -318,7 +341,7 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
     }
 
     //C'est un methode different avec la meme instruction qui affiche Hopitals
-    public void setHosptital(View view)
+    public void setHopital(View view)
     {
         mMap.clear();
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
@@ -400,7 +423,7 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
      * @param index de la ville selectioné
      */
 
-    public void createVille(String zone, String index)
+    public void afficherVille(String zone, String index)
     {
         final String ind = index;
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
@@ -417,8 +440,7 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
 
                 txt_Info.setText(vil.getInfo());
                 txt_Titre.setText(vil.getVille());
-                btn_Ubicacion.setText(vil.getVille()+" et Vous");
-                //Toast.makeText(getApplicationContext(),vil.getImg(),Toast.LENGTH_LONG).show();
+                btn_Ubication.setText(vil.getVille()+" et Vous");
 
                 LatLng markerVille = new LatLng(vil.getLat(), vil.getLng());
                 mMap.addMarker(new MarkerOptions().position(markerVille).title("Ici c'est "+vil.getVille()).icon(BitmapDescriptorFactory.fromResource(R.drawable.ubicamex)));
@@ -446,24 +468,26 @@ public class mapVille extends FragmentActivity implements OnMapReadyCallback {
      * @param latitude des lieux
      * @param longitude "" ""
      * @param nearbyPlace
-     * @return
+     * @returnl'url pour afficher les lieu correspondant
      */
     private String getUrl(double latitude, double longitude, String nearbyPlace)
     {
+        //on commence avec une variable qui va ajouter les direfents parties qui vont compposer l'url de demande a Google place
         StringBuilder googlePlaceUrl = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
+        //on ajoute les coordonnes de la ville
         googlePlaceUrl.append("location="+latitude+","+longitude);
-        googlePlaceUrl.append("&radius="+PROXIMITY_RADIUS);
+        //on ajoute un rayon pour afficher les lieux les plus proches
+        googlePlaceUrl.append("&radius=100000");
+        //Le type des lieux qu'on va montrer, par exemple les restaurant
         googlePlaceUrl.append("&type="+nearbyPlace);
+        //c'est optional, on l'utilise pour nous asurer dans la fonctionalités de l'affisage
         googlePlaceUrl.append("&sensor=true");
+        //notre KEY de google Place API
         googlePlaceUrl.append("&key="+"AIzaSyCSNe_m24he283amwNn5nFchHw7qDPGVcI");
 
         Log.i("DEBUG CreateURL", googlePlaceUrl.toString());
-
+        //URL final pour realiser la requete a Google Place API
         return googlePlaceUrl.toString();
     }
-
-
-
-
 
 }

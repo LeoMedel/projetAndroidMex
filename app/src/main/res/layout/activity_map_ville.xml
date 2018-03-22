@@ -13,13 +13,12 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-
         <TextView
             android:id="@+id/txtTitre"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Title"
+            android:text="Ville selectionée"
             android:textAlignment="center"
             android:textAllCaps="false"
             android:textColor="@color/common_google_signin_btn_text_dark_focused"
@@ -57,7 +56,7 @@
                         android:layout_weight="1"
                         android:editable="false"
                         android:fontFamily="casual"
-                        android:text="Information"
+                        android:text="Loading ..."
                         android:textAlignment="viewStart"
                         android:textColor="@color/common_google_signin_btn_text_dark_focused"
                         android:textSize="14sp" />
@@ -67,9 +66,7 @@
 
         </LinearLayout>
 
-
     </LinearLayout>
-
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -92,28 +89,28 @@
             android:textStyle="bold|italic" />
 
         <Button
-            android:id="@+id/btnMuseo"
+            android:id="@+id/btnMusee"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="2dp"
             android:layout_weight="1"
             android:background="@color/colorAccent"
             android:fontFamily="serif"
-            android:onClick="setMuseo"
+            android:onClick="setMusee"
             android:text="Musée"
             android:textColor="@color/common_google_signin_btn_text_dark_default"
             android:textSize="8sp"
             android:textStyle="bold|italic" />
 
         <Button
-            android:id="@+id/btnUbicacion"
+            android:id="@+id/btnUbication"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginRight="2dp"
             android:layout_weight="1"
             android:background="?attr/colorError"
             android:fontFamily="serif"
-            android:onClick="setUbicacion"
+            android:onClick="setUbication"
             android:text="La ville et vous"
             android:textColor="@color/common_google_signin_btn_text_dark_default"
             android:textSize="8sp"
@@ -127,7 +124,7 @@
             android:layout_weight="1"
             android:background="@color/colorWhite"
             android:fontFamily="serif"
-            android:onClick="setHosptital"
+            android:onClick="setHopital"
             android:selectAllOnFocus="false"
             android:text="hôpital"
             android:textColor="@color/common_google_signin_btn_text_dark_default"
@@ -148,8 +145,8 @@
             android:textSize="8sp"
             android:textStyle="bold|italic" />
 
-
     </LinearLayout>
+
 
     <LinearLayout
         android:layout_width="match_parent"
